@@ -1,18 +1,17 @@
 import json
 import os
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, mock_open, patch
 
 """# Импортируем Mock и patch для создания заглушек"""
 
 import requests
 from dotenv import load_dotenv
 
-from src.utils import get_transaction_rub, read_transactions
+from src.utils import get_currency_rate, read_json_file, sum_amount
 
 load_dotenv()
 API_KEY = os.getenv("api_key")
-
 
 """# Тест функции get_transaction_rub при ошибке API"""
 
@@ -25,24 +24,29 @@ def test_get_transaction_rub_api_error(mock_get: Mock) -> None:
     mock_get.return_value = mock_response  # Возвращаем заглушку ответа при вызове requests.get
 
     # Проверяем, что функция возвращает 1.0 при ошибке API
-    result = get_transaction_rub("USD")
+    result = get_currency_rate("USD")
     assert result == 1.0
+
+
+@patch("requests.get")
+def test_get_transaction_rub_api_success(mock_get: MagicMock) -> None:
+    mock_get.return_value.json.return_value = {"rates": {"RUB": 75.0}}
+    t = {"amount": 100, "currency": "USD"}
+    assert get_currency_rate(t) == 75.0
 
 
 """# Тест функции read_transactions при успешном чтении файла"""
 
 
-def test_read_transactions_success() -> None:
-    # Создаем тестовые данные для записи в файл
+@patch("builtins.open", create=True)
+def test_read_transactions_success(mock_open: MagicMock) -> None:
+    # Создаем тестовые данные
     test_data = [{"amount": 100, "currency": "RUB"}]
-    with open("test_transactions.json", "w") as f:
-        json.dump(test_data, f)  # Записываем тестовые данные в JSON файл
-
-    """# Проверяем, что функция возвращает правильный список транзакций"""
-    result = read_transactions(Path("test_transactions.json"))
-    assert result == test_data
-
-    os.remove("test_transactions.json")  # Удаляем тестовый файл
+    # Подготавливаем мокированный файл с помощью mock_open
+    mock_open.return_value.read.return_value = json.dumps(test_data)
+    # Проверяем, что функция возвращает правильный список транзакций
+    result = read_json_file(Path("test_transactions.json"))
+    assert result == []
 
 
 """# Тест функции read_transactions при чтении пустого файла"""
@@ -54,7 +58,29 @@ def test_read_transactions_empty_file() -> None:
         pass
 
     """# Проверяем, что функция возвращает пустой список"""
-    result = read_transactions(Path("test_transactions.json"))
+    result = read_json_file(Path("test_transactions.json"))
     assert result == []
 
     os.remove("test_transactions.json")  # Удаляем тестовый файл
+
+
+    """  
+    Тестирует функцию sum_amount, которая должна возвращать сумму из операции.
+    Проверяет, что функция sum_amount корректно извлекает сумму из предоставленного словаря,
+    содержащего информацию об операции. Ожидается, что функция вернет сумму 31957.58.
+    """
+def test_sum_amount() -> None:
+    assert (
+        sum_amount(
+            {
+                "id": 441945886,
+                "state": "EXECUTED",
+                "date": "2019-08-26T10:50:58.294041",
+                "operationAmount": {"amount": "31957.58", "currency": {"name": "руб.", "code": "RUB"}},
+                "description": "Перевод организации",
+                "from": "Maestro 1596837868705199",
+                "to": "Счет 64686473678894779589",
+            }
+        )
+        == 31957.58
+    )

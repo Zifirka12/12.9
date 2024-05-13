@@ -10,7 +10,7 @@ load_dotenv()
 API_KEY = os.getenv("api_key")
 
 
-def read_transactions(file_path: Path) -> List[Dict[str, Any]]:
+def read_json_file(file_path: Path) -> List[Dict[str, Any]]:
     """Считывает транзакции из JSON-файла."""
     try:
         with file_path.open(encoding="utf-8") as f:
@@ -23,7 +23,7 @@ def read_transactions(file_path: Path) -> List[Dict[str, Any]]:
         return []
 
 
-def get_transaction_rub(currency: str) -> Any:
+def get_currency_rate(currency: Any) -> Any:
     """Получает курс валюты от API и возвращает его в виде float"""
     url = f"https://api.apilayer.com/exchangerates_data/latest?symbols=RUB&base={currency}"
     try:
@@ -39,25 +39,31 @@ def get_transaction_rub(currency: str) -> Any:
         return 1.0
 
 
-def sum_amount(transactions: List[dict]) -> float:
+def sum_amount(transaction: dict) -> float:
     """Суммирует суммы всех транзакций"""
     total = 0.0
-    for transaction in transactions:
-        operation_amount = transaction.get("operationAmount", {})
-        currency_code = operation_amount.get("currency", {}).get("code")
-        amount = float(operation_amount.get("amount", 0))
-        if currency_code == "RUB":
-            total += amount
-        elif currency_code in ("EUR", "USD"):
-            rate = get_transaction_rub(currency_code)
-            total += amount * rate
-        else:
-            print(f"Неизвестная валюта: {currency_code}")
+    if transaction.get("operationAmount", {}).get("currency", {}).get("code") == "RUB":
+        total += float(transaction["operationAmount"]["amount"])
+    elif transaction.get("operationAmount", {}).get("currency", {}).get("code") == "EUR":
+        total += float(transaction["operationAmount"]["amount"]) * get_currency_rate("EUR")
+    elif transaction.get("operationAmount", {}).get("currency", {}).get("code") == "USD":
+        total += float(transaction["operationAmount"]["amount"]) * get_currency_rate("USD")
     return total
 
 
 if __name__ == "__main__":
-    operations_path = Path("../data/operations.json")
-    transactions = read_transactions(operations_path)
-    total_rub = sum_amount(transactions)
+    operations_path = Path("../data/operations.json")# Путь к файлу с операциями
+    transactions = read_json_file(operations_path)
+    total_rub = sum_amount(
+        {
+            "id": 441945886,
+            "state": "EXECUTED",
+            "date": "2019-08-26T10:50:58.294041",
+            "operationAmount": {"amount": "31957.58", "currency": {"name": "руб.", "code": "RUB"}},
+            "description": "Перевод организации",
+            "from": "Maestro 1596837868705199",
+            "to": "Счет 64686473678894779589",
+        }
+    )
+    """# Выводим общую сумму в рублях с двумя знаками после запятой"""
     print(f"Общая сумма в рублях: {total_rub:.2f}")
