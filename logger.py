@@ -18,7 +18,7 @@ def setup_logger(name: str, log_file: Path = LOG_FILE) -> logging.Logger:
         log_file: Путь к файлу логов.
 
     Returns:
-        Логгер для модуля.
+        Логгер для модуля.)
     """
 
     logger = logging.getLogger(name)
