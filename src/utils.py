@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 import requests
 from dotenv import load_dotenv
-from logger import external_api_logger, utils_logger
+from src.logger import external_api_logger, utils_logger
 
 
 load_dotenv()

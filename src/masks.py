@@ -1,4 +1,4 @@
-from logger import masks_logger
+from src.logger import masks_logger
 
 
 def mask_card(card_number: str) -> str:
