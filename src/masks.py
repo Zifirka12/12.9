@@ -1,3 +1,6 @@
+from logger import masks_logger
+
+
 def mask_card(card_number: str) -> str:
     """
     Функция принимает на вход номер карты и возвращает ее маску.
@@ -16,3 +19,7 @@ def mask_account(account_number: str) -> str:
         masked_account = "**" + account_number[-4:]
         return masked_account
     return "Некорректный номер счета"
+
+
+masks_logger.debug("Это отладочное сообщение из модуля masks")
+masks_logger.error("Это сообщение об ошибке из модуля masks")

@@ -2,9 +2,10 @@ import json
 import os
 from pathlib import Path
 from typing import Any, Dict, List
-
 import requests
 from dotenv import load_dotenv
+from logger import external_api_logger, utils_logger
+
 
 load_dotenv()
 API_KEY = os.getenv("api_key")
@@ -52,7 +53,7 @@ def sum_amount(transaction: dict) -> float:
 
 
 if __name__ == "__main__":
-    operations_path = Path("../data/operations.json")# Путь к файлу с операциями
+    operations_path = Path("../data/operations.json")  # Путь к файлу с операциями
     transactions = read_json_file(operations_path)
     total_rub = sum_amount(
         {
@@ -67,3 +68,7 @@ if __name__ == "__main__":
     )
     """# Выводим общую сумму в рублях с двумя знаками после запятой"""
     print(f"Общая сумма в рублях: {total_rub:.2f}")
+
+
+utils_logger.info("Это информационное сообщение из модуля utils")
+external_api_logger.warning("Это предупреждение из модуля external_api")
