@@ -18,7 +18,7 @@ def setup_logger(name: str, log_file: Path = LOG_FILE) -> logging.Logger:
         log_file: Путь к файлу логов.
 
     Returns:
-        Логгер для модуля.)
+        Логгер для модуля.
     """
 
     logger = logging.getLogger(name)
@@ -39,21 +39,3 @@ def setup_logger(name: str, log_file: Path = LOG_FILE) -> logging.Logger:
 masks_logger = setup_logger("masks")
 utils_logger = setup_logger("utils")
 external_api_logger = setup_logger("external_api")
-
-"""
-# В модуле masks.py
-import masks_logger
-
-masks_logger.debug("Это отладочное сообщение из модуля masks")
-masks_logger.error("Это сообщение об ошибке из модуля masks")
-
-# В модуле utils.py
-import utils_logger
-
-utils_logger.info("Это информационное сообщение из модуля utils")
-
-# В модуле external_api.py
-import external_api_logger
-
-external_api_logger.warning("Это предупреждение из модуля external_api")
-"""
