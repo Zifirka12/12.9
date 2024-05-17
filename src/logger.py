@@ -1,41 +1,21 @@
 import logging
-from logging import handlers
-from pathlib import Path
-
-# Настройка формата логов
-LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-
-# Путь к файлу логов
-LOG_FILE = Path("app.log")
+from typing import Any
 
 
-def setup_logger(name: str, log_file: Path = LOG_FILE) -> logging.Logger:
-    """
-    Настраивает логгер для модуля.
+def setup_logging() -> Any:
+    """Настраивает логирование."""
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.DEBUG)
 
-    Args:
-        name: Название модуля.
-        log_file: Путь к файлу логов.
+    formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
-    Returns:
-        Логгер для модуля.
-    """
-
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG)  # Уровень логирования
-
-    # Создание обработчика для записи в файл
-    file_handler = handlers.RotatingFileHandler(
-        filename=log_file, mode="w", maxBytes=10485760, backupCount=5, encoding="utf-8"
-    )
-    file_handler.setFormatter(logging.Formatter(LOG_FORMAT))
-
-    # Добавление обработчика к логгеру
+    # Исправленное имя файла
+    file_handler = logging.FileHandler("app.log", mode="w")
+    file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
+
+    # stream_handler = logging.StreamHandler()
+    # stream_handler.setFormatter(formatter)
+    # logger.addHandler(stream_handler)
+
     return logger
-
-
-# Создание логгеров для модулей
-masks_logger = setup_logger("masks")
-utils_logger = setup_logger("utils")
-external_api_logger = setup_logger("external_api")

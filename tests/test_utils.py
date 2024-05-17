@@ -8,7 +8,8 @@ from unittest.mock import MagicMock, Mock, mock_open, patch
 import requests
 from dotenv import load_dotenv
 
-from src.utils import get_currency_rate, read_json_file, sum_amount
+from src.external_API import get_currency_rate
+from src.utils import read_json_file, sum_amount
 
 load_dotenv()
 API_KEY = os.getenv("api_key")
@@ -63,12 +64,13 @@ def test_read_transactions_empty_file() -> None:
 
     os.remove("test_transactions.json")  # Удаляем тестовый файл
 
-
-    """  
+    """
     Тестирует функцию sum_amount, которая должна возвращать сумму из операции.
     Проверяет, что функция sum_amount корректно извлекает сумму из предоставленного словаря,
     содержащего информацию об операции. Ожидается, что функция вернет сумму 31957.58.
     """
+
+
 def test_sum_amount() -> None:
     assert (
         sum_amount(
