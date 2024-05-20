@@ -43,10 +43,10 @@ class TestReadTransactions(unittest.TestCase):
     @patch('builtins.open')
     def test_read_transactions_csv(self, mock_open):
         """Тестирует считывание транзакций из CSV-файла."""
-        mock_file = mock_open.return_value.__enter__.return_value
+        mock_file = mock_open.return_value.enter.return_value
         mock_file.read.return_value = """Date,Description,Amount
-2023-10-26,Salary,2500.00
-2023-10-27,Groceries,150.00"""
+        2023-10-26,Salary,2500.00
+        2023-10-27,Groceries,150.00"""
         file_path = 'transactions.csv'
         transactions = read_transactions_csv(file_path)
         self.assertEqual(len(transactions), 2)
