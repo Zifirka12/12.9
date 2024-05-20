@@ -1,5 +1,5 @@
-from typing import List, Union
 import csv
+from typing import List, Union
 import pandas as pd
 
 

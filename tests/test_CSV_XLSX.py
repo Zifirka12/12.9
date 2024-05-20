@@ -1,8 +1,9 @@
-from src.CSV_XLSX import read_transactions_xlsx, read_transactions_csv, read_transactions
+import unittest
+from unittest.mock import patch
+
 import pandas as pd
 
-from unittest.mock import patch
-import unittest
+from src.CSV_XLSX import read_transactions, read_transactions_csv, read_transactions_xlsx
 
 
 class Transaction:
@@ -43,8 +44,7 @@ class TestReadTransactions(unittest.TestCase):
     @patch('builtins.open')
     def test_read_transactions_csv(self, mock_open):
         """Тестирует считывание транзакций из CSV-файла."""
-        """вот он пока не работает"""
-        mock_file = mock_open.return_value.enter.return_value
+        mock_file = mock_open.return_value.__enter__.return_value
         mock_file.read.return_value = """Date,Description,Amount
         2023-10-26,Salary,2500.00
         2023-10-27,Groceries,150.00"""
