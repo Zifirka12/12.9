@@ -43,6 +43,7 @@ class TestReadTransactions(unittest.TestCase):
     @patch('builtins.open')
     def test_read_transactions_csv(self, mock_open):
         """Тестирует считывание транзакций из CSV-файла."""
+        """вот он пока не работает"""
         mock_file = mock_open.return_value.enter.return_value
         mock_file.read.return_value = """Date,Description,Amount
         2023-10-26,Salary,2500.00
