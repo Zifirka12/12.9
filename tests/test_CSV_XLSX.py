@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import patch
-
+import os
 import pandas as pd
 
 from src.CSV_XLSX import read_transactions, read_transactions_csv, read_transactions_xlsx
@@ -41,15 +41,14 @@ class TestReadTransactions(unittest.TestCase):
         self.assertEqual(transactions[1].description, 'Groceries')
         self.assertEqual(transactions[1].amount, 150.00)
 
-    @patch('builtins.open')
-    def test_read_transactions_csv(self, mock_open):
+    def test_read_transactions_csv(self):
         """Тестирует считывание транзакций из CSV-файла."""
-        mock_file = mock_open.return_value.__enter__.return_value
-        mock_file.read.return_value = """Date,Description,Amount
-        2023-10-26,Salary,2500.00
-        2023-10-27,Groceries,150.00"""
-        file_path = 'transactions.csv'
-        transactions = read_transactions_csv(file_path)
+        current_dir = os.path.dirname(__file__)  # Получаем путь к текущей директории
+        file_path = os.path.join(current_dir, 'transactions.csv')  # Собираем полный путь к файлу
+
+        with open(file_path, 'r', encoding='utf-8') as file:
+            transactions = read_transactions_csv(file)
+
         self.assertEqual(len(transactions), 2)
         self.assertEqual(transactions[0].date, '2023-10-26')
         self.assertEqual(transactions[0].description, 'Salary')
