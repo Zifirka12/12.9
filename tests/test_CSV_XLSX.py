@@ -42,7 +42,7 @@ class TestReadTransactions(unittest.TestCase):
         self.assertEqual(transactions[1].amount, 150.00)
 
     def test_read_transactions_csv(self):
-        """Тестирует считывание транзакций из CSV-файла."""
+        """Тестирует считывание транзакций из CSV-файла.Вот он путь хочет ("""
         current_dir = os.path.dirname(__file__)  # Получаем путь к текущей директории
         file_path = os.path.join(current_dir, 'transactions.csv')  # Собираем полный путь к файлу
 

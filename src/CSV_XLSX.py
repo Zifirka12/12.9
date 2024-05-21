@@ -11,7 +11,7 @@ class Transaction:
         self.description = description
         self.amount = amount
 
-    def __str__(self):
+    def str(self) -> str:
         return f"Дата: {self.date}, Описание: {self.description}, Сумма: {self.amount}"
 
 
