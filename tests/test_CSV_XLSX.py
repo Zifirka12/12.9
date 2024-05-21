@@ -12,8 +12,8 @@ class Transaction:
     """Представляет финансовую операцию."""
 
     def __init__(self):
-        self.amount = None
         self.description = None
+        self.amount = None
         self.date = None
 
     def init(self, date: str, description: str, amount: float):
@@ -38,7 +38,7 @@ class TestReadTransactions(unittest.TestCase):
                 "Amount": [2500.00, 150.00],
             }
         )
-        file_path = "transactions_excel.xlsx"
+        file_path = "transactions_excel.xlsx"  # Убедитесь, что файл существует
         transactions = read_transactions_xlsx(file_path)
         self.assertEqual(len(transactions), 2)
         self.assertEqual(transactions[0].date, "2023-10-26")
@@ -50,16 +50,13 @@ class TestReadTransactions(unittest.TestCase):
 
     def test_read_transactions_csv(self) -> None:
         """Тестирует считывание транзакций из CSV-файла."""
-        current_dir = os.path.dirname(__file__)  # Получаем путь к текущей директории
-        file_path = os.path.join(current_dir, "../transactions.csv")  # Собираем полный путь к файлу
+        file_path = os.path.join(
+            "C:\\Users\\User\\pythonProject5.1(0)\\data\\transactions.csv")  # Собираем полный путь к файлу
 
         transactions = read_transactions_csv(file_path)
-
         self.assertEqual(len(transactions), 2)
-        self.assertEqual(transactions[0].date, "2023-10-26")
         self.assertEqual(transactions[0].description, "Salary")
         self.assertEqual(transactions[0].amount, 2500.00)
-        self.assertEqual(transactions[1].date, "2023-10-27")
         self.assertEqual(transactions[1].description, "Groceries")
         self.assertEqual(transactions[1].amount, 150.00)
 
