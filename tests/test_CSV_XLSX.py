@@ -11,6 +11,11 @@ from src.CSV_XLSX import read_transactions, read_transactions_csv, read_transact
 class Transaction:
     """Представляет финансовую операцию."""
 
+    def __init__(self):
+        self.amount = None
+        self.description = None
+        self.date = None
+
     def init(self, date: str, description: str, amount: float):
         self.date = date
         self.description = description
