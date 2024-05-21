@@ -1,49 +1,38 @@
 import csv
-from typing import List, Union
+from typing import Dict, List
+
 import pandas as pd
-from pathlib import Path
 
 
-class Transaction:
-    """Представляет финансовую операцию."""
-
-    def __init__(self, date: str, description: str, amount: float):
-        self.date = date
-        self.description = description
-        self.amount = amount
-
-    def __str__(self):
-        return f"Дата: {self.date}, Описание: {self.description}, Сумма: {self.amount}"
-
-
-def read_transactions_csv(file_path: str) -> List[Transaction]:
-    transactions = []
-    with open(file_path, 'r', newline='', encoding='utf-8') as csvfile:
-        reader = csv.DictReader(csvfile)
-        print(reader.fieldnames)  # Выводим названия полей столбцов
+def read_transactions_csv(file_path: str) -> List[Dict]:
+    """
+    Чтение финансовых операций из CSV-файла.
+    :param file_path: Путь к CSV-файлу.
+    :return: Список словарей, каждый из которых представляет собой одну операцию.
+    """
+    opera = []  # Список для хранения операций
+    with open(file_path, "r", newline="") as csvfile:
+        reader = csv.DictReader(csvfile)  # Создаем объект для чтения словарей
         for row in reader:
-            transaction = Transaction(
-                row['Date'], row['description'], float(row['amount'])
-            )
-            transactions.append(transaction)
-    return transactions
+            opera.append(row)  # Добавляем каждую строку в список операций
+    return opera
 
 
-def read_transactions_xlsx(file_path: str) -> List[Transaction]:
-    df = pd.read_excel(file_path)
-    transactions = []
-    for index, row in df.iterrows():
-        transaction = Transaction(
-            row['Date'], row['Description'], float(row['Amount'])
-        )
-        transactions.append(transaction)
-    return transactions
+# Пример использования функции:
+operations_1 = read_transactions_csv(r"C:\Users\User\pythonProject5.1(0)\data\transactions.csv")
+print(operations_1)
 
 
-def read_transactions(file_path: str) -> Union[List[Transaction], None]:
-    if file_path.endswith('.csv'):
-        return read_transactions_csv(file_path)
-    elif file_path.endswith('.xlsx'):
-        return read_transactions_xlsx(file_path)
-    else:
-        return None
+def read_transactions_xlsx(file_path: str) -> List[Dict]:
+    """
+    Чтение финансовых операций из XLSX-файла.
+    :param file_path: Путь к XLSX-файлу.
+    :return: Список словарей, каждый из которых представляет собой одну операцию.
+    """
+    opera_1 = pd.read_excel(file_path)  # Читаем файл Excel с помощью Pandas
+    return opera_1.to_dict("records")  # Преобразуем DataFrame в список словарей
+
+
+# Пример использования функции:
+operations = read_transactions_xlsx(r"C:\Users\User\pythonProject5.1(0)\data\transactions_excel.xlsx")
+print(operations)

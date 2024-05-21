@@ -25,6 +25,7 @@ pytest = "^8.1.1"
 pytest-cov = "^5.0.0"
 pandas = "^2.2.2"
 pandas-stubs = "^2.2.2.240514"
+openpyxl = "^3.1.2"
 
 [tool.pytest.ini_options]
 minversion = "6.0"
