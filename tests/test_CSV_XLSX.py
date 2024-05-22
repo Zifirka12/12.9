@@ -1,18 +1,20 @@
 import unittest
-from unittest.mock import patch
-import pandas as pd
 from typing import Any
-from src.CSV_XLSX import read_transactions_csv, read_transactions_xlsx
+from unittest.mock import patch
+
+import pandas as pd
+
+from src.csv_xlsx import read_transactions_csv, read_transactions_xlsx
 
 
 @patch("csv.DictReader")
 def test_read_from_csv(mock_csv_reader: Any) -> None:
     """
-        Тестирование функционала чтения транзакций из CSV файла.
+    Тестирование функционала чтения транзакций из CSV файла.
 
-        Args:
-            mock_csv_reader (Any): Мок-объект для имитации csv.DictReader.
-        """
+    Args:
+        mock_csv_reader (Any): Мок-объект для имитации csv.DictReader.
+    """
     mock_csv_reader.return_value = iter(
         [{"Date": "2022-01-01", "Amount": "100.00"}, {"Date": "2022-02-01", "Amount": "200.00"}]
     )
