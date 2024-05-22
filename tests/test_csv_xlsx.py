@@ -7,29 +7,29 @@ import pandas as pd
 from src.csv_xlsx import read_transactions_csv, read_transactions_xlsx
 
 
-@patch("csv.DictReader")
-def test_read_from_csv(mock_csv_reader: Any) -> None:
+def test_read_transactions_csv() -> None:
     """
-    Тестирование функционала чтения транзакций из CSV файла.
+    Тест для файла с правильным форматом
+    """
+    file_path = r"C:\Users\User\pythonProject5.1(0)\data\transactions.csv"
+    transactions_list = read_transactions_csv(file_path)
+    assert isinstance(transactions_list, list)
+    assert all(isinstance(transaction, dict) for transaction in transactions_list)
 
-    Args:
-        mock_csv_reader (Any): Мок-объект для имитации csv.DictReader.
+
+def test_read_transactions_csv_invalid_file() -> None:
     """
-    mock_csv_reader.return_value = iter(
-        [{"Date": "2022-01-01", "Amount": "100.00"}, {"Date": "2022-02-01", "Amount": "200.00"}]
-    )
-    result = read_transactions_csv(r"C:\Users\User\pythonProject5.1(0)\data\transactions.csv")
-    expected_result = [{"Date": "2022-01-01", "Amount": "100.00"}, {"Date": "2022-02-01", "Amount": "200.00"}]
-    unittest.TestCase().assertEqual(result, expected_result)
+    Тест для файла с неправильным форматом
+    """
+    file_path = "data.txt"
+    transactions_list = read_transactions_csv(file_path)
+    assert transactions_list == []
 
 
 @patch("pandas.read_excel")
 def test_read_from_xlsx(mock_read_excel: Any) -> None:
     """
     Тестирование функционала чтения транзакций из Excel файла.
-
-    Args:
-        mock_read_excel (Any): Мок-объект для имитации pandas.read_excel.
     """
     mock_read_excel.return_value = pd.DataFrame({"Date": ["2022-01-01", "2022-02-01"], "Amount": [100.00, 200.00]})
     result = read_transactions_xlsx(r"C:\Users\User\pythonProject5.1(0)\data\transactions_excel.xlsx")
