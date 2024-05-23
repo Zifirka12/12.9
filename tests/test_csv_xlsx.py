@@ -11,7 +11,7 @@ def test_read_transactions_csv() -> None:
     """
     Тест для файла с правильным форматом
     """
-    file_path = r"C:\Users\User\pythonProject5.1(0)\data\transactions.csv"
+    file_path = "../data/transactions.csv"
     transactions_list = read_transactions_csv(file_path)
     assert isinstance(transactions_list, list)
     assert all(isinstance(transaction, dict) for transaction in transactions_list)
@@ -32,7 +32,7 @@ def test_read_from_xlsx(mock_read_excel: Any) -> None:
     Тестирование функционала чтения транзакций из Excel файла.
     """
     mock_read_excel.return_value = pd.DataFrame({"Date": ["2022-01-01", "2022-02-01"], "Amount": [100.00, 200.00]})
-    result = read_transactions_xlsx(r"C:\Users\User\pythonProject5.1(0)\data\transactions_excel.xlsx")
+    result = read_transactions_xlsx("../data/transactions_excel.xlsx")
     expected_result = [{"Date": "2022-01-01", "Amount": 100.00}, {"Date": "2022-02-01", "Amount": 200.00}]
     unittest.TestCase().assertEqual(result, expected_result)
 
