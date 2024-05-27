@@ -131,14 +131,14 @@ def main() -> None:
 
             # Фильтрация по валюте
             filter_by_currency = input("Выводить только рублевые транзакции? Да/Нет\n").lower()
-            if filter_by_currency == "да":
+            if filter_by_currency == "Да":
                 transactions = filter_transactions_by_currency(transactions)
 
             # Фильтрация по описанию
             filter_by_description = input(
                 "Отфильтровать список транзакций по определенному слову в описании? Да/Нет\n"
             ).lower()
-            if filter_by_description == "да":
+            if filter_by_description == "Да":
                 word = input("Введите слово для фильтрации:\n")
                 transactions = filter_transactions_by_description(transactions, word)
 
