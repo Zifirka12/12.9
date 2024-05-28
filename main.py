@@ -1,240 +1,95 @@
-import csv
-import json
-from datetime import datetime
-from typing import Any
-
-import openpyxl
-
-
-def get_transactions_from_json(file_path: str) -> Any:
-    """
-    Функция для получения информации о транзакциях из JSON файла.
-    Args:
-        file_path (str): Путь к JSON файлу.
-    Returns:
-        list: Список словарей с данными о транзакциях.
-    """
-    try:
-        with open(file_path, "r", encoding="utf-8") as f:
-            transactions = json.load(f)
-        return transactions
-    except FileNotFoundError:
-        raise Exception(f"Файл {file_path} не найден. Проверьте путь к файлу.")
-    except json.JSONDecodeError:
-        raise Exception(f"Ошибка декодирования JSON файла {file_path}. Проверьте корректность формата файла.")
+from src.csv_xlsx import read_transactions_csv, read_transactions_xlsx
+from src.generators import filter_by_currency, transaction_descriptions
+from src.processing import filter_by_state, sort_by_date
+from src.utils import read_json_file, sum_amount
+from src.dictionary_handler import search_operations
+from src.widget import convert_date_format, mask_number
+from typing import Dict, List
+import re
 
 
-def get_transactions_from_csv(file_path: str) -> list:
-    """
-    Функция для получения информации о транзакциях из CSV файла.
-    Args:
-        file_path (str): Путь к CSV файлу.
-    Returns:
-        list: Список словарей с данными о транзакциях.
-    """
-    transactions = []
-    try:
-        with open(file_path, "r", encoding="utf-8", newline="") as f:
-            reader = csv.DictReader(f)
-            for row in reader:
-                transactions.append(row)
-        return transactions
-    except FileNotFoundError:
-        raise Exception(f"Файл {file_path} не найден. Проверьте путь к файлу.")
-    except csv.Error as e:
-        raise Exception(f"Ошибка чтения CSV файла {file_path}: {e}")
-
-
-def get_transactions_from_xlsx(file_path: str) -> Any:
-    """
-    Функция для получения информации о транзакциях из XLSX файла.
-    Args:
-    file_path (str): Путь к XLSX файлу.
-    Returns:
-    list: Список словарей с данными о транзакциях.
-    """
-    transactions = []
-    try:
-        workbook = openpyxl.load_workbook(file_path)
-        worksheet = workbook.active
-        headers = [cell.value for cell in worksheet[1]]
-        for row in worksheet.iter_rows(min_row=2, values_only=True):
-            transaction = {headers[i]: cell for i, cell in enumerate(row)}
-            transactions.append(transaction)
-        return transactions
-    except FileNotFoundError:
-        raise Exception(f"Файл {file_path} не найден. Проверьте путь к файлу.")
-    except Exception as e:
-        raise Exception(f"Ошибка чтения XLSX файла {file_path}: {e}")
-
-
-def parse_date(date_str: str) -> datetime:
-    """
-    Парсит строку с датой в объект datetime.
-    Args:
-        date_str (str): Строка с датой.
-    Returns:
-        datetime: Объект datetime.
-    """
-    return datetime.strptime(date_str, "%d.%m.%Y")
-
-
-def format_date(date_obj: datetime) -> str:
-    """
-    Форматирует объект datetime обратно в строку.
-    Args:
-        date_obj (datetime): Объект datetime.
-    Returns:
-        str: Строка с датой.
-    """
-    return date_obj.strftime("%d.%m.%Y")
-
-
-def filter_transactions_by_currency(transactions: list) -> list:
-    return [transaction for transaction in transactions if transaction.get("currency") == "RUB"]
-
-
-def filter_transactions_by_description(transactions: list, word: str) -> list:
-    return [transaction for transaction in transactions if word.lower() in transaction.get("description", "").lower()]
-
-
-def sort_transactions_by_date(transactions: list, order: str = "asc") -> list:
-    """
-    Сортирует транзакции по дате.
-    Args:
-        transactions (list): Список транзакций.
-        order (str): Порядок сортировки ('asc' или 'desc').
-    Returns:
-        list: Отсортированный список транзакций.
-    """
-    for transaction in transactions:
-        # Предполагается, что дата находится в ключе 'date'
-        transaction["date"] = parse_date(transaction["date"])
-
-    sorted_transactions = sorted(transactions, key=lambda x: x["date"], reverse=(order == "desc"))
-
-    for transaction in sorted_transactions:
-        transaction["date"] = format_date(transaction["date"])
-
-    return sorted_transactions
-
-
-def main() -> None:
-    print("Привет! Добро пожаловать в программу работы с банковскими транзакциями.")
-    file_path = get_file_path()
-    transactions = get_transactions(file_path)
-
-    if transactions:
-        transactions = filter_transactions(transactions)
-        transactions = sort_transactions(transactions)
-        print_transactions(transactions)
+def file_format() -> tuple[List[Dict], str]:
+    print("Добро пожаловать в программу работы с банковскими транзакциями!")
+    file = input("""Выберите формат файла: 1. Json 2. CSV 3. Excel\n""")
+    if file == "1":
+        print("Для обработки выбран json файл.\n")
+        return read_json_file("../data/operations.json"), "json"
+    elif file == "2":
+        print("Для обработки выбран csv файл.\n")
+        return read_transactions_csv("../data/transactions.csv"), "csv"
+    elif file == "3":
+        print("Для обработки выбран excel файл.\n")
+        return read_transactions_xlsx("../data/transactions_excel.xlsx"), "excel"
     else:
-        print("Информация о транзакциях не получена.")
+        print("Пожалуйста, выберите правильный номер опции.")
+        return file_format()
 
 
-def get_file_path() -> str:
-    print("Выберите необходимый пункт меню:")
-    print("1. Получить информацию о транзакциях из json файла")
-    print("2. Получить информацию о транзакциях из csv файла")
-    print("3. Получить информацию о транзакциях из xlsx файла")
-    choice = input("Введите номер пункта меню: ")
-    if choice == "1":
-        return input("Введите путь к json файлу: ")
-    elif choice == "2":
-        return input("Введите путь к csv файлу: ")
-    elif choice == "3":
-        return input("Введите путь к xlsx файлу: ")
-    else:
-        print("Неверный выбор. Пожалуйста, введите 1, 2 или 3.")
-        return get_file_path()
+def status_sort(data: List[Dict]) -> List[Dict]:
+    print("Выберите статус, по которому необходимо выполнить фильтрацию.")
+    status = input("Доступные для сортировки статусы: EXECUTED, CANCELED, PENDING\n")
+
+    if status.upper() not in ("EXECUTED", "CANCELED", "PENDING"):
+        print("Некорректный статус, повторите ввод.")
+        return status_sort(data)
+
+    return filter_by_state(data, status)
 
 
-def get_transactions(file_path: str) -> Any:
-    file_extension = file_path.split(".")[-1]
-    if file_extension == "json":
-        return get_transactions_from_json(file_path)
-    elif file_extension == "csv":
-        return get_transactions_from_csv(file_path)
-    elif file_extension == "xlsx":
-        return get_transactions_from_xlsx(file_path)
-    else:
-        print(f"Неизвестный формат файла: {file_extension}")
-        return []
-
-
-def filter_transactions(transactions: list) -> list:
-    status = input(
-        "Введите статус по которому необходимо выполнить фильтрацию."
-        " \nДоступные для фильтровки статусы: EXECUTED, CANCELED, PENDING\n"
-    ).upper()
-    currency = input("Выводить только рублевые транзакции? Да/Нет\n").lower() == "да"
-    word = input("Введите слово для фильтрации:\n")
-
-    return [
-        transaction
-        for transaction in transactions
-        if transaction.get("status") == status
-        and (not currency or transaction.get("currency") == "RUB")
-        and word.lower() in transaction.get("description", "").lower()
-    ]
-
-
-def sort_transactions(transactions: list) -> list:
-    sort_by_date = input("Отсортировать операции по дате? Да/Нет\n").lower() == "да"
-    order = input("Отсортировать по возрастанию или по убыванию?\n")
-    while order.lower() not in ["по возрастанию", "по убыванию"]:
-        print("Неверный порядок сортировки. Введите 'по возрастанию' или 'по убыванию'.")
-        order = input("Отсортировать по возрастанию или по убыванию?\n")
-
-    if sort_by_date:
-        return sort_transactions_by_date(transactions, order)
-    else:
-        return transactions
-
-
-def print_transactions(transactions: list) -> None:
-    print(f"Всего банковских операций в выборке: {len(transactions)}")
-    for transaction in transactions:
-        print(f"{transaction['date']} {transaction['description']}")
-        print(f"Счет {transaction['account']}")
-        print(f"Сумма: {transaction['amount']} {transaction['currency']}\n")
-
-        # Добавление логики в основную часть программы
-        if transactions:
-            # Фильтрация по статусу
-            status = input(
-                "Введите статус по которому необходимо выполнить фильтрацию."
-                " \nДоступные для фильтровки статусы: EXECUTED, CANCELED, PENDING\n"
-            )
-            transactions = [transaction for transaction in transactions if transaction.get("status") == status]
-
-            # Сортировка по дате
-            sort_by_date = input("Отсортировать операции по дате? Да/Нет\n").lower()
-            if sort_by_date == "да":
-                order = input("Отсортировать по возрастанию или по убыванию?\n")
-                while order.lower() not in ["по возрастанию", "по убыванию"]:
-                    print("Неверный порядок сортировки. Введите 'по возрастанию' или 'по убыванию'.")
-                    order = input("Отсортировать по возрастанию или по убыванию?\n")
-                transactions = sort_transactions_by_date(transactions, order)
-
-            # Фильтрация по валюте
-            filter_by_currency = input("Выводить только рублевые транзакции? Да/Нет\n").lower()
-            if filter_by_currency == "да":
-                transactions = filter_transactions_by_currency(transactions)
-
-            # Фильтрация по описанию
-            filter_by_description = input(
-                "Отфильтровать список транзакций по определенному слову в описании? Да/Нет\n"
-            ).lower()
-            if filter_by_description == "да":
-                word = input("Введите слово для фильтрации:\n")
-                transactions = filter_transactions_by_description(transactions, word)
-
-            # Вывод результата
-            print_transactions(transactions)
+def date_sort(data: List[Dict]) -> List[Dict]:
+    to_sort = input("Отсортировать операции по дате? Да/нет \n")
+    if to_sort.lower() == "да":
+        time = input("По возрастанию или по убыванию?\n")
+        if time.lower() == "по возрастанию":
+            return sort_by_date(data)
+        elif time.lower() == "по убыванию":
+            return sort_by_date(data, "decreasing")
         else:
-            print("Информация о транзакциях не получена.")
+            print("Некорректное значение, повторите ввод.")
+            return date_sort(data)
+    elif to_sort.lower() == "нет":
+        return data
+    else:
+        print("Некорректный ответ, повторите ввод.")
+        return date_sort(data)
 
 
-if __name__ == "__main__":
-    main()
+def only_rub(data: List[Dict], file_type: str) -> List[Dict]:
+    to_sort = input("Выводить только рублевые транзакции? Да/нет \n")
+    if to_sort.lower() == "да":
+        return filter_by_currency(data, "RUB")
+    elif to_sort.lower() == "нет":
+        return data
+    else:
+        print("Некорректный ответ, повторите ввод.")
+        return only_rub(data, file_type)
+
+
+def word_sort(data: List[Dict]) -> List[Dict]:
+    to_sort = input("Отсортировать список операций по определённому слову в описании? Да/нет\n")
+    if to_sort.lower() == "да":
+        to_find = input("Что вы хотели бы найти? \n")
+        return search_operations(data, to_find)
+    elif to_sort.lower() == "нет":
+        return data
+    else:
+        print("Некорректный ответ, повторите ввод.")
+        return word_sort(data)
+
+
+def print_transactions(data: List[Dict]) -> None:
+    print("Распечатываю список транзакций которые подходят под критерии")
+    if data and len(data) != 0:
+        print(f"Всего операций в выборке: {len(data)}\n")
+        for operation in data:
+            print(
+                convert_date_format(operation["date"]),
+                next(transaction_descriptions(data)),
+            )
+            if re.search("Перевод", operation["description"]):
+                print(mask_number(operation["from"]), " -> ", mask_number(operation["to"]))
+            else:
+                print(mask_number(operation["to"]))
+                print(f"Сумма: {sum_amount(operation)}руб. \n")
+    else:
+        print("Не найдено ни одной транзакции подходящей под ваши условия фильтрации")
