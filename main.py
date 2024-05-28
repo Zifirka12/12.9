@@ -1,7 +1,6 @@
 import csv
 import json
 from datetime import datetime
-from os import name
 from typing import Any
 
 import openpyxl
@@ -124,6 +123,7 @@ def main() -> None:
     print("Привет! Добро пожаловать в программу работы с банковскими транзакциями.")
     file_path = get_file_path()
     transactions = get_transactions(file_path)
+
     if transactions:
         transactions = filter_transactions(transactions)
         transactions = sort_transactions(transactions)
@@ -217,7 +217,7 @@ def print_transactions(transactions: list) -> None:
                     order = input("Отсортировать по возрастанию или по убыванию?\n")
                 transactions = sort_transactions_by_date(transactions, order)
 
-# Фильтрация по валюте
+            # Фильтрация по валюте
             filter_by_currency = input("Выводить только рублевые транзакции? Да/Нет\n").lower()
             if filter_by_currency == "да":
                 transactions = filter_transactions_by_currency(transactions)
@@ -236,5 +236,5 @@ def print_transactions(transactions: list) -> None:
             print("Информация о транзакциях не получена.")
 
 
-if name == "main":
+if __name__ == "__main__":
     main()
