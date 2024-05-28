@@ -10,7 +10,7 @@ def search_operations(data: List[Dict[str, str]], search_string: str) -> List[Di
     """
     result = []
     for row in data:
-        if re.search(search_string, row['description'], re.IGNORECASE):
+        if re.findall(search_string.lower(), row["description"].lower()):
             result.append(row)
     return result
 
@@ -23,9 +23,8 @@ def categorize_operations(data: List[Dict[str, str]], categories: Dict[str, List
     category_count = defaultdict(int)
 
     for row in data:
-        for category, keywords in categories.items():
-            for keyword in keywords:
-                if re.search(keyword, row['description'], re.IGNORECASE):
-                    category_count[category] += 1
+        for operation in data:
+            if operation['description'] == row:
+                category_count[operation] += 1
 
     return category_count
