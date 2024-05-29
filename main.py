@@ -16,10 +16,10 @@ def file_format() -> tuple[List[Dict], str]:
         return read_json_file("../data/operations.json"), "json"
     elif file == "2":
         print("Для обработки выбран csv файл.\n")
-        return read_transactions_csv("../data/transactions.csv"), "csv"
+        return read_transactions_csv("data/transactions.csv"), "csv"
     elif file == "3":
         print("Для обработки выбран excel файл.\n")
-        return read_transactions_xlsx("../data/transactions_excel.xlsx"), "excel"
+        return read_transactions_xlsx("data/transactions_excel.xlsx"), "excel"
     else:
         print("Пожалуйста, выберите правильный номер опции.")
         return file_format()
@@ -93,3 +93,16 @@ def print_transactions(data: List[Dict]) -> None:
                 print(f"Сумма: {sum_amount(operation)}руб. \n")
     else:
         print("Не найдено ни одной транзакции подходящей под ваши условия фильтрации")
+
+
+def main():
+    data, file_type = file_format()
+    data = status_sort(data)
+    data = date_sort(data)
+    data = only_rub(data, file_type)
+    data = word_sort(data)
+    print_transactions(data)
+
+
+if __name__ == "__main__":
+    main()

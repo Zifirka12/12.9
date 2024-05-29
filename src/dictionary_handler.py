@@ -47,9 +47,9 @@ categories = {
     "доход": ["Зарплата"]
 }
 
-search_string = "покупка"
+"""search_string = "покупка"
 result_search = search_operations(data, search_string)
 print(result_search)
 
 result_categorize = categorize_operations(data)
-print(result_categorize)
+print(result_categorize)"""

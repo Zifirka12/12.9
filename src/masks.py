@@ -40,5 +40,5 @@ def mask_account(account_number: str) -> str:
         return "Некорректный номер счета"
 
 
-mask_card("1234567890123456")
-mask_account("12345678901234567890123456789012")
+"""mask_card("1234567890123456")
+mask_account("12345678901234567890123456789012")"""

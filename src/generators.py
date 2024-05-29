@@ -22,8 +22,8 @@ transactions = [
 
 descriptions = transaction_descriptions(transactions)
 
-for _ in range(5):
-    print(next(descriptions))
+"""for _ in range(5):
+    print(next(descriptions))"""
 
 
 def filter_by_currency(transactions: List[dict], currency: str) -> Generator[Any, None, None]:
@@ -45,8 +45,8 @@ transactions = [
 
 usd_transactions = filter_by_currency(transactions, "USD")
 
-for _ in range(2):
-    print(next(usd_transactions)["id"])
+"""for _ in range(2):
+    print(next(usd_transactions)["id"])"""
 """
 Этот код реализует функцию `filter_by_currency`, которая фильтрует операции в
  списке `transactions` по заданной валюте и возвращает итератор с этими операциями.
@@ -64,6 +64,6 @@ def card_number_generator(start: int, end: int) -> Generator[str, Any, None]:
         yield "".join([str(randint(start, end)) for _ in range(16)])
 
 
-# Пример использования
+"""# Пример использования
 for card_number in card_number_generator(2, 8):
-    print(" ".join([card_number[i : i + 4] for i in range(0, len(card_number), 4)]))
+    print(" ".join([card_number[i : i + 4] for i in range(0, len(card_number), 4)]))"""

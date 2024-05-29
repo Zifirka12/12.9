@@ -26,8 +26,8 @@ input_data = [
 ]
 
 
-output_descending = sort_by_date(input_data, "descending")
-print(output_descending)
+"""output_descending = sort_by_date(input_data, "descending")
+print(output_descending)"""
 
 
 def filter_by_state(list_of_dicts: List[dict], state: str = "EXECUTED") -> List[dict]:
@@ -57,5 +57,5 @@ output_default = filter_by_state(input_data, "EXECUTED")
 output_canceled = filter_by_state(input_data, "CANCELED")
 
 
-print(output_default)
-print(output_canceled)
+"""print(output_default)
+print(output_canceled)"""

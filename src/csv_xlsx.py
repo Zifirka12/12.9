@@ -25,5 +25,5 @@ def read_transactions_xlsx(file_path: str) -> List[Dict]:
 
 
 # Пример использования функции:
-operations = read_transactions_xlsx("../data/transactions_excel.xlsx")
-print(operations)
+#operations = read_transactions_xlsx("data/transactions_excel.xlsx")
+#print(operations)
