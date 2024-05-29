@@ -1,11 +1,13 @@
+import re
+from typing import Dict, List
+from pathlib import Path
+
 from src.csv_xlsx import read_transactions_csv, read_transactions_xlsx
+from src.dictionary_handler import search_operations
 from src.generators import filter_by_currency, transaction_descriptions
 from src.processing import filter_by_state, sort_by_date
 from src.utils import read_json_file, sum_amount
-from src.dictionary_handler import search_operations
 from src.widget import convert_date_format, mask_number
-from typing import Dict, List
-import re
 
 
 def file_format() -> tuple[List[Dict], str]:
@@ -13,7 +15,7 @@ def file_format() -> tuple[List[Dict], str]:
     file = input("""Выберите формат файла: 1. Json 2. CSV 3. Excel\n""")
     if file == "1":
         print("Для обработки выбран json файл.\n")
-        return read_json_file("../data/operations.json"), "json"
+        return read_json_file(Path("../data/operations.json")), "json"
     elif file == "2":
         print("Для обработки выбран csv файл.\n")
         return read_transactions_csv("data/transactions.csv"), "csv"
@@ -95,7 +97,7 @@ def print_transactions(data: List[Dict]) -> None:
         print("Не найдено ни одной транзакции подходящей под ваши условия фильтрации")
 
 
-def main():
+def main() -> None:
     data, file_type = file_format()
     data = status_sort(data)
     data = date_sort(data)
