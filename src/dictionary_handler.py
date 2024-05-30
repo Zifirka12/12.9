@@ -1,55 +1,38 @@
+import json
 import re
-from collections import defaultdict
-from typing import DefaultDict, Dict, List
+from typing import Any
 
 
-def search_operations(data_1: List[Dict[str, str]], search_string_1: str) -> List[Dict[str, str]]:
-    """
-    Функция принимает список словарей с данными о банковских операциях и строку поиска.
-    Возвращает список словарей, у которых в описании есть данная строка.
-    """
-    result = []
-    for row in data_1:
-        if re.findall(search_string_1.lower(), row["description"].lower()):
-            result.append(row)
-    return result
+def search_transactions(transactions_1: Any, search_string: Any) -> list:
+    """Фильтрация списка словарей, проверяя наличие строки поиска в описании"""
+    return [
+        transaction
+        for transaction in transactions_1
+        if "description" in transaction and re.search(search_string, transaction["description"])
+    ]
 
 
-def categorize_operations(data_2: List[Dict[str, str]]) -> defaultdict[str, int]:
-    """
-    Функция принимает список словарей с данными о банковских операциях и словарь категорий операций.
-    Возвращает словарь, где ключи - это названия категорий, а значения - количество операций в каждой категории.
-    """
-    category_count: DefaultDict[str, int] = defaultdict(int)
-
-    for row in data_2:
-        for category, keywords in categories.items():
-            for keyword in keywords:
-                if keyword.lower() in row["description"].lower():
-                    category_count[category] += 1
-
-    return category_count
+def categorize_transactions(transactions_2: Any, categories_2: Any) -> dict[Any, int]:
+    category_counts_1 = {category: 0 for category in categories_2.keys()}
+    """Создание словаря для подсчета операций,Подсчет операций в каждой категории"""
+    for transaction in transactions_2:
+        if "description" in transaction:
+            for category, keywords in categories_2.items():
+                if any(keyword in transaction["description"] for keyword in keywords):
+                    category_counts_1[category] += 1
+                    break
+    return category_counts_1
 
 
-# Данные о банковских операциях
-data = [
-    {"description": "Покупка продуктов в магазине", "amount": "1000"},
-    {"description": "Оплата за интернет", "amount": "500"},
-    {"description": "Зарплата", "amount": "2000"},
-    {"description": "Оплата коммунальных услуг", "amount": "1500"},
-    {"description": "Покупка билетов в кино", "amount": "800"}
-]
+""" Пример использования:"""
+def read_transactions_from_json(file_path: str) -> Any:
+    with open(file_path, "r", encoding="utf-8") as file:
+        return json.load(file)
 
-# Словарь категорий операций
-categories = {
-    "покупки": ["Покупка", "Покупки", "Билеты"],
-    "оплата услуг": ["Оплата", "Коммунальные"],
-    "доход": ["Зарплата"]
-}
 
-"""search_string = "покупка"
-result_search = search_operations(data, search_string)
-print(result_search)
+transactions = read_transactions_from_json("../data/operations.json")
 
-result_categorize = categorize_operations(data)
-print(result_categorize)"""
+categories = {"Перевод": ["Перевод организации", "Перевод частному лицу"]}
+
+category_counts = categorize_transactions(transactions, categories)
+print("Количество операций в каждой категории:", category_counts)

@@ -24,6 +24,6 @@ def read_transactions_xlsx(file_path: str) -> List[Dict]:
     return opera_1.to_dict("records")  # Преобразуем DataFrame в список словарей
 
 
-# Пример использования функции:
+""" Пример использования функции:
 #operations = read_transactions_xlsx("data/transactions_excel.xlsx")
-#print(operations)
+#print(operations)"""
