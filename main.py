@@ -1,4 +1,5 @@
 import re
+from pathlib import Path
 from typing import Dict, List
 
 from src.csv_xlsx import read_transactions_csv, read_transactions_xlsx
@@ -19,7 +20,7 @@ def choose_file_format() -> tuple[List[Dict], str]:
     file = input("""Выберите формат файла: 1. Json 2. CSV 3. Excel\n""")
     if file == "1":
         print("Для обработки выбран json файл.\n")
-        return read_json_file("data/operations.json"), "json"
+        return read_json_file(Path("data/operations.json")), "json"
     elif file == "2":
         print("Для обработки выбран csv файл.\n")
         return read_transactions_csv("data/transactions.csv"), "csv"

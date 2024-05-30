@@ -30,7 +30,7 @@ def read_transactions_from_json(file_path: str) -> Any:
         return json.load(file)
 
 
-transactions = read_transactions_from_json("../data/operations.json")
+transactions = read_transactions_from_json("data/operations.json")
 
 categories = {"Перевод": ["Перевод организации", "Перевод частному лицу"]}
 
