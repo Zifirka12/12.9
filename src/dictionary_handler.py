@@ -24,7 +24,7 @@ def categorize_transactions(transactions_2: Any, categories_2: Any) -> dict[Any,
     return category_counts_1
 
 
-""" Пример использования:"""
+#Пример использования:
 def read_transactions_from_json(file_path: str) -> Any:
     with open(file_path, "r", encoding="utf-8") as file:
         return json.load(file)
