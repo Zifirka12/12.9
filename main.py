@@ -1,6 +1,6 @@
 import re
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Any
 
 from src.csv_xlsx import read_transactions_csv, read_transactions_xlsx
 from src.dictionary_handler import search_transactions
@@ -14,7 +14,7 @@ def choose_file_format() -> tuple[List[Dict], str]:
     """Запрашивает у пользователя формат файла и возвращает данные транзакций и тип файла.
 
     Returns:
-        tuple[List[Dict], str]: Список словарей с транзакциями и тип файла (json, csv, excel).
+        tuple Список словарей с транзакциями и тип файла (json, csv, excel).
     """
     print("Добро пожаловать в программу работы с банковскими транзакциями!")
     file = input("""Выберите формат файла: 1. Json 2. CSV 3. Excel\n""")
@@ -28,6 +28,7 @@ def choose_file_format() -> tuple[List[Dict], str]:
         print("Для обработки выбран excel файл.\n")
         return read_transactions_xlsx("data/transactions_excel.xlsx"), "excel"
     else:
+        """Если выбрал не от 1 до 3 возращает обратно к началу работы программы """
         print("Пожалуйста, выберите правильный номер опции.")
         return choose_file_format()
 
@@ -36,30 +37,29 @@ def filter_by_status(data: List[Dict]) -> List[Dict]:
     """Фильтрует список транзакций по заданному статусу.
 
     Args:
-        data (List[Dict]): Список словарей с транзакциями.
+        data Список словарей с транзакциями.
 
-    Returns:
-        List[Dict]: Отфильтрованный список транзакций.
+    Returns Отфильтрованный список транзакций.
     """
     print("Выберите статус, по которому необходимо выполнить фильтрацию.")
     status = input("Доступные для сортировки статусы: EXECUTED, CANCELED, PENDING\n")
 
     if status.upper() not in ("EXECUTED", "CANCELED", "PENDING"):
+        """Если выбрал некорректный статус возращает обратно к вопросу status"""
         print("Некорректный статус, повторите ввод.")
         return filter_by_status(data)
 
     return filter_by_state(data, status)
 
 
-def sort_by_date_and_currency(data: List[Dict], file_type: str) -> List[Dict]:
+def sort_by_date_and_currency(data: List[Dict], file_type: str) -> list[dict[Any, Any]]:
     """Сортирует список транзакций по дате и фильтрует по валюте.
 
     Args:
-        data (List[Dict]): Список словарей с транзакциями.
-        file_type (str): Тип файла (json, csv, excel).
+        data Список словарей с транзакциями.
+        file_type Тип файла (json, csv, excel).
 
-    Returns:
-        List[Dict]: Отсортированный и отфильтрованный список транзакций.
+    Returns Отсортированный и отфильтрованный список транзакций.
     """
     to_sort = input("Отсортировать операции по дате? Да/нет \n")
     if to_sort.lower() == "да":
@@ -69,6 +69,7 @@ def sort_by_date_and_currency(data: List[Dict], file_type: str) -> List[Dict]:
         elif time.lower() == "по убыванию":
             data = sort_by_date(data, "decreasing")
         else:
+            """Если выбрал некорректное значение возращает обратно к вопросу to_sort"""
             print("Некорректное значение, повторите ввод.")
             return sort_by_date_and_currency(data, file_type)
     elif to_sort.lower() == "нет":
@@ -83,6 +84,7 @@ def sort_by_date_and_currency(data: List[Dict], file_type: str) -> List[Dict]:
     elif to_sort.lower() == "нет":
         return data
     else:
+        """Если выбрал некорректный ответ возращает обратно к вопросу to_sort"""
         print("Некорректный ответ, повторите ввод.")
         return sort_by_date_and_currency(data, file_type)
 
@@ -91,10 +93,9 @@ def filter_by_keyword(data: List[Dict]) -> List[Dict]:
     """Фильтрует список транзакций по ключевому слову в описании.
 
     Args:
-        data (List[Dict]): Список словарей с транзакциями.
+        data Список словарей с транзакциями.
 
-    Returns:
-        List[Dict]: Отфильтрованный список транзакций.
+    Returns Отфильтрованный список транзакций.
     """
     to_sort = input("Отсортировать список операций по определённому слову в описании? Да/нет\n")
     if to_sort.lower() == "да":
@@ -103,6 +104,7 @@ def filter_by_keyword(data: List[Dict]) -> List[Dict]:
     elif to_sort.lower() == "нет":
         return data
     else:
+        """Если выбрал некорректное ответ возращает обратно к вопросу to_sort"""
         print("Некорректный ответ, повторите ввод.")
         return filter_by_keyword(data)
 
@@ -111,7 +113,7 @@ def print_transactions(data: List[Dict]) -> None:
     """Выводит отформатированный список транзакций на консоль.
 
     Args:
-        data (List[Dict]): Список словарей с транзакциями.
+        data Список словарей с транзакциями.
     """
     print("Распечатываю список транзакций которые подходят под критерии")
     if data and len(data) != 0:
@@ -127,6 +129,7 @@ def print_transactions(data: List[Dict]) -> None:
                 print(mask_number(operation["to"]))
                 print(f"Сумма: {sum_amount(operation)}руб. \n")
     else:
+        """Если не найдено нечего того что хотел пользователь """
         print("Не найдено ни одной транзакции подходящей под ваши условия фильтрации")
 
 

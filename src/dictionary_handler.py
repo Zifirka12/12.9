@@ -1,20 +1,17 @@
 import json
 import re
-from typing import Any, Dict, List
 from collections import Counter
+from typing import Any, Dict, List
 
 
 def search_transactions(transactions_1: List[Dict[str, Any]], search_string: str) -> List[Dict[str, Any]]:
     """
     Фильтрация списка словарей, проверяя наличие строки поиска в описании.
 
-    Args:
-        transactions_1 (List[Dict[str, Any]]): Список словарей с транзакциями.
-        search_string (str): Строка поиска.
+        transactions_1 Список словарей с транзакциями.
+        search_string Строка поиска.
 
-    Returns:
-        List[Dict[str, Any]]: Отфильтрованный список словарей с транзакциями, где в описании 
-        содержится строка поиска.
+    Returns Отфильтрованный список словарей с транзакциями.
     """
     return [
         transaction
@@ -23,19 +20,18 @@ def search_transactions(transactions_1: List[Dict[str, Any]], search_string: str
     ]
 
 
-def categorize_transactions(transactions_2: List[Dict[str, Any]], categories_2: Dict[str, List[str]]) -> Dict[str, int]:
+def categorize_transactions(
+    transactions_2: List[Dict[str, Any]], categories_2: Dict[str, List[str]]
+) -> Dict[str, int]:
     """
     Подсчет операций в каждой категории, используя заданные ключевые слова.
 
-    Args:
-        transactions_2 (List[Dict[str, Any]]): Список словарей с транзакциями.
-        categories_2 (Dict[str, List[str]]): Словарь с категориями и соответствующими ключевыми словами.
+        transactions_2 Список словарей с транзакциями.
+        categories_2 Словарь с категориями и соответствующими ключевыми словами.
 
-    Returns:
-        Dict[str, int]: Словарь, где ключи - названия категорий, а значения - количество 
-        транзакций, относящихся к каждой категории.
+    Returns Словарь, где ключи - названия категорий, а значения - количество транзакций, относящихся к каждой категории.
     """
-    category_counts_2 = Counter()
+    category_counts_2: Any = Counter()
     for transaction in transactions_2:
         if "description" in transaction:
             for category, keywords in categories_2.items():
@@ -46,7 +42,7 @@ def categorize_transactions(transactions_2: List[Dict[str, Any]], categories_2: 
 
 
 # Пример использования:
-def read_transactions_from_json(file_path: str) -> List[Dict[str, Any]]:
+def read_transactions_from_json(file_path: str) -> Any:
     """
     Чтение транзакций из JSON-файла.
 
@@ -65,7 +61,7 @@ transactions = read_transactions_from_json("data/operations.json")
 categories = {"Перевод": ["Перевод организации", "Перевод частному лицу"]}
 
 category_counts = categorize_transactions(transactions, categories)
-print("Количество операций в каждой категории:", category_counts)
+# print("Количество операций в каждой категории:", category_counts)
 
 transactions_3 = [
     {"description": "Перевод организации"},
@@ -81,4 +77,4 @@ categories_3 = {
 }
 
 category_counts = categorize_transactions(transactions_3, categories_3)
-print(category_counts)  # Вывод: {'Перевод': 2, 'Покупка': 1, 'Оплата': 1}
+# print(category_counts)  # Вывод: {'Перевод': 2, 'Покупка': 1, 'Оплата': 1}
