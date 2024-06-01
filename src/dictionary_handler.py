@@ -31,13 +31,16 @@ def categorize_transactions(
 
     Returns Словарь, где ключи - названия категорий, а значения - количество транзакций, относящихся к каждой категории.
     """
-    category_counts_2: Any = Counter()
+    category_counts_2: Dict[str, int] = Counter()
+
     for transaction in transactions_2:
         if "description" in transaction:
             for category, keywords in categories_2.items():
-                if any(keyword in transaction["description"] for keyword in keywords):
+                # Проверяем наличие хотя бы одного ключевого слова в описании транзакции
+                if any(keyword.lower() in transaction["description"].lower() for keyword in keywords):
                     category_counts_2[category] += 1
-                    break
+                    break  # Выход из цикла по категориям, если найдено совпадение
+
     return dict(category_counts_2)
 
 
@@ -63,18 +66,19 @@ categories = {"Перевод": ["Перевод организации", "Пе�
 category_counts = categorize_transactions(transactions, categories)
 # print("Количество операций в каждой категории:", category_counts)
 
-transactions_3 = [
-    {"description": "Перевод организации"},
-    {"description": "Покупка товаров"},
-    {"description": "Оплата услуг"},
-    {"description": "Перевод частному лицу"},
+transactions_4 = [
+    {"description": "Оплата за интернет"},
+    {"description": "Покупка продуктов в магазине"},
+    {"description": "Перевод денег другу"},
+    {"description": "Оплата за мобильную связь"},
+    {"description": "Покупка билетов на концерт"}
 ]
 
-categories_3 = {
-    "Перевод": ["Перевод организации", "Перевод частному лицу"],
-    "Покупка": ["Покупка товаров"],
-    "Оплата": ["Оплата услуг"],
+categories_4 = {
+    "Интернет": ["интернет", "онлайн"],
+    "Продукты": ["продукты", "магазин"],
+    "Другое": ["перевод", "концерт", "билеты"]
 }
 
-category_counts = categorize_transactions(transactions_3, categories_3)
-# print(category_counts)  # Вывод: {'Перевод': 2, 'Покупка': 1, 'Оплата': 1}
+result = categorize_transactions(transactions_4, categories_4)
+print(result)  # Вывод: {'Интернет': 1, 'Продукты': 1, 'Другое': 3}
